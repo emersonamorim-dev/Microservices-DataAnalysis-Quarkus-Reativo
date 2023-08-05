@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  account-service:
+    build:
+      context: ./account-service
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      DATABASE_URL: jdbc:oracle:thin:@db:1521:xe
+      DATABASE_USER: user
+      DATABASE_PASSWORD: password
+    depends_on:
+      - db
+  transaction-service:
+    build:
+      context: ./transaction-service
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8080
+    environment:
+      DATABASE_URL: jdbc:oracle:thin:@db:1521:xe
+      DATABASE_USER: user
+      DATABASE_PASSWORD: password
+    depends_on:
+      - db
+  db:
+    image: oracle/database:19.3.0-se2
+    environment:
+      ORACLE_SID: xe
+      ORACLE_PDB: pdb1
+      ORACLE_PWD: password
+    volumes:
+      - db-data:/opt/oracle/oradata
+volumes:
+  db-data:
